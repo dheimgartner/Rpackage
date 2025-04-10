@@ -1,6 +1,9 @@
 \documentclass[a4paper]{article}
 \usepackage{minimal}
 
+%\VignetteIndexEntry{Let's build a package together!}
+%\VignettePackage{Rpackage}
+
 \usepackage[dvipsnames]{xcolor}
 \usepackage[nochapters,eulermath=true]{classicthesis}
 \usepackage{natbib}
