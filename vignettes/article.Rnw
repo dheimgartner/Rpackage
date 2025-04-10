@@ -173,11 +173,12 @@ foo <- function(msg = "Are you sleeping?") {
 @
 %
 \leftmarginpar{\fct{devtools::document}}
-This \emph{parses} the roxygen skeleton and generates the \code{man} folder (manpages are the helppages) as well as the \code{.Rd} documentation (which is \R's markup, similar to \LaTeX, for documentation). But we don't have to know about this -- all we need to do is write the magic comments and run \fct{devtools::document} to update it.
+\marginpar{A \code{NAMESPACE} defines, what objects are visible when loading the package...}
+This \emph{parses} the roxygen skeleton and generates the \code{man} folder (manpages are the helppages) as well as the \code{.Rd} documentation (which is \R's markup, similar to \LaTeX, for documentation). Further, it automatically manages the \code{NAMESPACE} for us. But we don't have to know about this -- all we need to do is write the magic comments and run \fct{devtools::document} to update it.
 %
 \marginpar{TODO}
 \leftmarginpar{How to document data?}
-I will update this document and show you -- I promise!
+I will update this document and show you -- I promise! While you are at it, take a look at the \code{DESCRIPTION} file...
 
 \section{Paper vignette}
 \leftmarginpar{\fct{paperPackage::scaffold}}
