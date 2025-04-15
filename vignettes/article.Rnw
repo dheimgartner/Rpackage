@@ -294,7 +294,7 @@ which builds the vignette (our paper) in the \code{doc} repository and will be s
 This builds the source package (\code{.tar.gz} -- a compression file format similar to \code{.zip}) which can be installed by
 \marginpar{You can also upload the code to GitHub and then people can install it via \fct{devtools::github\_install}. See \url{https://github.com/dheimgartner/Rpackage}}...
 <<install, eval=FALSE>>=
-install.packages("../Rpackage.tar.gz")
+install.packages("../Rpackage.tar.gz", repos = NULL)
 @
 \marginpar{By default, the built package is located in the parent. That's why we need to navigate one folder level up when installing (i.e., \code{../}).}
 
