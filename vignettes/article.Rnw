@@ -1,7 +1,8 @@
 \documentclass[a4paper]{article}
 \usepackage{minimal}
 
-%\VignetteIndexEntry{Let's build a package together!}
+%\VignetteIndexEntry{Let's build an R-package together!}
+%\VignetteDepends{dplyr, devtools}
 %\VignettePackage{Rpackage}
 
 \usepackage[dvipsnames]{xcolor}
@@ -28,7 +29,8 @@
 <<preliminaries, echo=FALSE, results=hide>>=
 options(prompt = " ",  continue = "   ", width = 70, useFancyQuotes = FALSE)
 library("Rpackage")
-library("tidyverse")
+library("dplyr")
+library("devtools")
 @
 
 \author{Daniel Heimgartner}
@@ -38,19 +40,12 @@ library("tidyverse")
 \begin{document}
 \maketitle
 
-\leftmarginpar{TODO}
-\begin{enumerate}
-\item Make sure all files are available and run \fct{devtools::document} and stuff
-\item Make sure this is a good example, run \fct{devtools::check} and fill in the \code{DESCRIPTION} file, ...
-\item Find out if people are interested in these topics and make suggestions for ``workshop'' (e.g., more-indetph on package dev [vignette], bash, git, GitHub, \LaTeX (and tables), ...)
-\end{enumerate}
-
 \section{Why?}
 
 \leftmarginpar{What is an \R-package?}
 \begin{itemize}
 \item You are free to organize your code however you want!
-\item But: There are good and bad practices (e.g., stuff like \code{stwd("~/foo/bar")}, \code{read.csv("~/foo/bar.csv")})
+\item But: There are good and bad practices (e.g., stuff like \code{stwd("/foo/bar")}, \code{read.csv("/foo/bar.csv")})
 \item A package is nothing else then a standardized way to organize \emph{information} (not necessarily code!)
 \item It is nothing to be afraid of!
 \end{itemize}
@@ -109,6 +104,7 @@ This will create the \code{data-raw} folder and initialize the \code{useful\_dat
 #= data-raw/useful_data.R
 ## code to prepare `useful_data` dataset goes here
 ## e.g., fetch data from the qualtrics server
+library(dplyr)
 useful_data <- iris
 
 ## clean it
@@ -258,10 +254,10 @@ to generate the actual man pages in the \code{man} directory, and load them.
 
 \section{Paper vignette}
 
-What is reproducible research? Anyone should be able to generate your results on the fly! Now imagine that you want to present the results of our regression analysis which lives in \code{Rpackage::analysis\_script\$fit}. You maybe copy paste the parameter estimates to an excel file or use some tool to build a \LaTeX table. In my view, this introduces three problems
+What is reproducible research? Anyone should be able to generate your results on the fly! Now imagine that you want to present the results of our regression analysis which lives in \code{Rpackage::analysis\_script\$fit}. You maybe copy paste the parameter estimates to an excel file or use some tool to build a \LaTeX~table. In my view, this introduces three problems
 %
 \begin{enumerate}
-\item The link between the final output (the table) and the analysis breaks (if you share the \LaTeX source, it is not evident, where the results were generated)
+\item The link between the final output (the table) and the analysis breaks (if you share the \LaTeX~source, it is not evident, where the results were generated)
 \item If you update the analysis (e.g., add a variable in the regression) a whole chain of manual updates is required (which is tidious and error prone)!
 \item Building tables manually is not fun... ;)
 \end{enumerate}

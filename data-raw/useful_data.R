@@ -1,5 +1,6 @@
 ## code to prepare `useful_data` dataset goes here
 ## e.g., fetch data from the qualtrics server
+library(dplyr)
 useful_data <- iris
 
 ## clean it

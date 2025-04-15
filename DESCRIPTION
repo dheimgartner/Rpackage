@@ -1,10 +1,11 @@
 Package: Rpackage
-Title: What the Package Does (One Line, Title Case)
+Title: Let's Build an R-package Together!
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+    person("Daniel", "Heimgartner", email = "d.heimgartners@gmail.com", role = c("aut", "cre", "cph"),
+    comment = c(ORCID = "0000-0002-0643-8690"))
+Description: This is a minimal introduction to R package development. Check out
+    the vignette `vignette("article", "Rpackage")`.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -12,3 +13,6 @@ RoxygenNote: 7.3.2
 Depends: 
     R (>= 2.10)
 LazyData: true
+Suggests: 
+    devtools,
+    dplyr
