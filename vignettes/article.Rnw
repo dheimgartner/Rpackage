@@ -20,6 +20,8 @@
 \bibliographystyle{minimal}
 
 \setlength{\marginparwidth}{4cm}
+\setlength{\marginparsep}{0.4cm}
+\setlength{\marginparpush}{0.75cm}
 \hypersetup{citecolor=teal}
 
 \SweaveOpts{engine=R, eps=FALSE, keep.source = TRUE}
@@ -38,8 +40,8 @@ library("tidyverse")
 
 \leftmarginpar{TODO}
 \begin{enumerate}
-\item Nicely format
 \item Make sure all files are available and run \fct{devtools::document} and stuff
+\item Make sure this is a good example, run \fct{devtools::check} and fill in the \code{DESCRIPTION} file, ...
 \item Find out if people are interested in these topics and make suggestions for ``workshop'' (e.g., more-indetph on package dev [vignette], bash, git, GitHub, \LaTeX (and tables), ...)
 \end{enumerate}
 
@@ -93,7 +95,7 @@ What did we get?
 \end{Verbatim}
 %
 \marginpar{The \code{.Rproj} file is just is RStudio's ``project file'', storing some settings regarding your project organization. In particular it opens a new RStudio session in that current folder...}
-We get the minimal file and folder structure of an \proglang{R}-package (where \code{Rpackage.Rproj} is optional if you are using RStudio).
+We get the minimal file and folder structure of an \proglang{R}-package (\code{Rpackage.Rproj} is optional if you are using RStudio).
 
 \leftmarginpar{\fct{usethis::use\_data\_raw}}
 The \code{data-raw} folder is where the untouched raw data goes. But also all the scripts that manipulate this raw data and generate some other output (e.g., data for the analysis). I usually put all my scripts there since it allows me to easily store intermediate \code{objects}, attach them to the package and use them at a later stage (e.g., a model fit as returned by \fct{fit}, see below). Let's get concrete
@@ -104,25 +106,27 @@ usethis::use_data_raw("useful_data")
 This will create the \code{data-raw} folder and initialize the \code{useful\_data.R} script. An example what to put there
 %
 <<script, eval=FALSE>>=
+#= data-raw/useful_data.R
 ## code to prepare `useful_data` dataset goes here
 ## e.g., fetch data from the qualtrics server
 useful_data <- iris
 
 ## clean it
 useful_data <- useful_data %>%
-  rename(species = Species, sepal_length = Sepal.Length, sepal_width = Sepal.Width,
-         petal_length = Petal.Width, petal_width = Petal.Length)  # classic mistake ;)
+  rename(species = Species, sepal_length = Sepal.Length,
+         sepal_width = Sepal.Width, petal_length = Petal.Width,
+         petal_width = Petal.Length)  # classic mistake ;)
 
 ## this is the magic line!
 usethis::use_data(useful_data, overwrite = TRUE)
 @
 %
-\leftmarginpar{Run the script! What happened?}
-This will generate the \code{data} folder and the \R-data \code{useful\_data.rda}.
 \marginpar{See why this convention is helpful? Any person familiar with the \R-package workflow expects that an object part of a package was generated in the \code{data-raw} folder, in a script with the same name.}
-%
+\leftmarginpar{Run the script! What happened?}
+Running the script (see also \code{?usethis::use\_data}) will generate the \code{data} folder and the \R-data \code{useful\_data.rda}.
+
 \leftmarginpar{\fct{devtools::load\_all}}
-You will run this function a lot! It essentially simulates a \code{library(Rpackage)} call (i.e., loads the package is it was installed).
+You will run \fct{devtools::load\_all} a lot! It essentially simulates a \code{library(Rpackage)} call (i.e., loads the package is it was installed).
 <<load-all>>=
 devtools::load_all()
 head(Rpackage::useful_data)
@@ -132,6 +136,7 @@ head(Rpackage::useful_data)
 Everything in the \code{R} folder gets sourced! Maybe we have a function that we use in multiple scripts (during data preparation or analysis in \code{data-raw}) or want other users to benefit from (when we share the package)...
 \marginpar{It is convention to name the source file the same as the function name. I.e., a function \fct{foo} lives in \code{foo.R}! It's just a convention, you can put multiple functions into the same source file if you like...}
 <<foo, eval=FALSE>>=
+#= R/foo.R
 foo <- function(msg = "Are you sleeping?") {
   cat(msg, "\n")
 }
@@ -164,6 +169,7 @@ usethis::use_data_raw("analysis_script")
 @
 Then put the following code in there, i.e., the file \code{./data-raw/analysis\_script.R} (make sure you understand it!)
 <<script, eval=FALSE>>=
+#= data-raw/analysis_script.R
 ## code to prepare `analysis_script` dataset goes here
 ## load the package (as we use the useful_data)
 devtools::load_all()
@@ -191,11 +197,12 @@ summary(Rpackage::analysis_script$fit)
 The above gets you already quite far. Did you ever wonder, how these fancy \R-helppages are generated?
 \leftmarginpar{Documentation as ``code''}
 Documentation and code should live together (if possible). We can use the \pkg{roxygen2} package to easily document code using a special comment syntax (starting with \code{\#'}).
-\marginpar{Anything you can achieve in RStudio is available through this command palette (as in most code IDEs)...}
+\marginpar{Anything you can achieve in RStudio is available through this command palette (as in most IDEs)...}
 Move back to the \code{R/foo.R} file, place the cursor inside the function body and press \code{Shift+Ctrl/Cmd+P}. Type ``Insert a rox'' and hit enter. This scaffolds the \emph{roxygen skeleton}.
 
 Let's explain what this function does
 <<roxygen, eval=FALSE>>=
+#= R/foo.R
 #' For Orientation Only
 #'
 #' This function does nothing useful, but it could!
@@ -225,6 +232,7 @@ While you are at it, take a look at the \code{DESCRIPTION} file -- it just conta
 \leftmarginpar{How to document data?}
 \pkg{roxygen2} only generates documentation from the source in the \code{R} directory (at least per default). I usually create a file \code{R/roxygen.R} where I put all the documentation stuff, with no corresponding source file in the \code{R} directory, such as our \code{useful\_data} data. So, let's document it
 <<roxygen-raw-data, eval=FALSE>>=
+#= R/roxygen.R
 #' Edgar Anderson's Iris Data
 #'
 #' With cleaner names...
@@ -246,40 +254,40 @@ devtools::document()
 @
 %
 to generate the actual man pages in the \code{man} directory, and load them.
+\marginpar{\fct{devtools::build\_manual} generates a \code{.pdf} manual for free -- try it out!}
 
-% \section{Paper vignette}
+\section{Paper vignette}
+
+What is reproducible research? Anyone should be able to generate your results on the fly! Now imagine that you want to present the results of our regression analysis which lives in \code{Rpackage::analysis\_script\$fit}. You maybe copy paste the parameter estimates to an excel file or use some tool to build a \LaTeX table. In my view, this introduces three problems
 %
-% What is reproducible research? Anyone should be able to generate your results on the fly! Now imagine that you want to present the results of our regression analysis which lives in \code{Rpackage::analysis\_script\$fit}. You maybe copy paste the parameter estimates to an excel file or use some tool to build a \LaTeX table. In my view, this introduces three problems
-% %
-% \begin{enumerate}
-% \item The link between the final output (the table) and the analysis breaks (if you share the \LaTeX source, it is not evident, where the results were generated)
-% \item If you update the analysis (e.g., add a variable in the regression) a whole chain of manual updates is required (which is tidious and error prone)!
-% \item Building tables manually is not fun... ;)
-% \end{enumerate}
-% %
-% \marginpar{But how do I collaborate on a paper? I would recommend that you only collaborate with people familiar to this workflow (and \proglang{git})! ;)}
+\begin{enumerate}
+\item The link between the final output (the table) and the analysis breaks (if you share the \LaTeX source, it is not evident, where the results were generated)
+\item If you update the analysis (e.g., add a variable in the regression) a whole chain of manual updates is required (which is tidious and error prone)!
+\item Building tables manually is not fun... ;)
+\end{enumerate}
 %
-% %% Sometimes it is fun...
-% \begin{tabular}{lll}
-% Enters: & The package vignette \\
-% Leaving: & Overleaf \\
-% \end{tabular}
+\marginpar{But how do I collaborate on a paper? I would recommend that you only collaborate with people familiar to this workflow (and \proglang{git})! ;)}
+
+%% Sometimes it is fun...
+\begin{tabular}{lll}
+Enters: & The package vignette \\
+Leaving: & Overleaf \\
+\end{tabular}
+
+\leftmarginpar{\fct{paperPackage::scaffold} \url{https://github.com/dheimgartner/paperPackage/}}
+\R~has built-in support to compile \code{.Rnw} documents -- nothing else than plain \LaTeX~intermingled with \R~code chunks. Code chunks start with \code{<<>>=} and end with \code{@}. Everything in between is evaluated as \R-code and its output can be embedded in the text. As a starting point, run
+<<scaffold-vignette, eval=FALSE>>=
+paperPackage::scaffold("RJournal")
+@
+which scaffolds (I like that word!) the \code{vignettes} folder and generates a minimal article using the \emph{R Journal} style...
 %
-% \leftmarginpar{\fct{paperPackage::scaffold}}
-% \marginpar{\code{devtools::install\_github("dheimgartner/paperPackage")}}
-% \R~has built-in support to compile \code{.Rnw} documents -- nothing else than plain \LaTeX intermingled with \R~code chunks. Code chunks start with \code{<<>>=} and end with \code{@}. Everything in between is evaluated as \R-code and its output can be embedded in the text. As a starting point, run
-% <<scaffold-vignette, eval=FALSE>>=
-% paperPackage::scaffold("RJournal")
-% @
-% which scaffolds (I like that word!) the \code{vignettes} folder and generates a minimal article using the \emph{R Journal} style...
-% %
-% Compile the vignette using
-% <<compile, eval=FALSE>>=
-% devtools::build_vignettes()
-% @
-% which builds the vignette (our paper) in the \code{doc} repository and will be shipped together with our package (run \code{vignette("article", package = "Rpackage")}).
-%
-% \marginpar{You can also use \pkg{knitr} and \code{.Rmd} files to generate vignettes or papers, but I am quite old-fashioned and prefer \code{Swevae} (i.e., \code{.Rnw}) \url{https://stat.ethz.ch/R-manual/R-devel/library/utils/doc/Sweave.pdf}.}
+Compile the vignette using
+<<compile, eval=FALSE>>=
+devtools::build_vignettes()
+@
+which builds the vignette (our paper) in the \code{doc} repository and will be shipped together with our package (run \code{vignette("article", package = "Rpackage")}).
+
+\marginpar{You can also use \pkg{knitr} and \code{.Rmd} files to generate vignettes or papers, but I am quite old-fashioned and prefer \code{Sweave} (i.e., \code{.Rnw}) \url{https://stat.ethz.ch/R-manual/R-devel/library/utils/doc/Sweave.pdf}.}
 
 \section{Sharing is caring}
 
@@ -289,6 +297,7 @@ This builds the source package (\code{.tar.gz} -- a compression file format simi
 <<install, eval=FALSE>>=
 install.packages("../Rpackage.tar.gz")
 @
+\marginpar{By default, the built package is located in the parent. That's why we need to navigate one folder level up when installing (i.e., \code{../}).}
 
 \section{Take away}
 
@@ -317,10 +326,10 @@ install.packages("../Rpackage.tar.gz")
 \marginpar{GitHub is ``just'' a host for repositories -- a website/app, but with some very nice features for project management, e.g., the issue tracker). However, the main versioning tool (and magic) is \proglang{git} -- don't mistake the two...}
 
 \begin{itemize}
-\item \citeauthor{Wickham+Bryan:2023}'s book on package development
-\item \proglang{bash} \citep{Bash:2019}: \url{https://linuxcommand.org/lc3_learning_the_shell.php}
-\item For windows users: download \proglang{Git BASH} at \url{https://gitforwindows.org/}
-\item \proglang{git}: The first three chapters of \citet{Git:2014}
+\item Package development: \url{https://r-pkgs.org/} \citep{Wickham+Bryan:2023}
+\item \proglang{bash}: \url{https://linuxcommand.org/lc3_learning_the_shell.php} \citep{Bash:2019}
+\item \proglang{Git BASH} for windows users: \url{https://gitforwindows.org/}
+\item \proglang{git}: \url{https://git-scm.com/book/en/v2} -- first three chapters \citep{Git:2014}
 \end{itemize}
 
 \bibliography{refs}
