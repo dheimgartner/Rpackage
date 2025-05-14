@@ -5,7 +5,7 @@ We are building a minimal `R` package together!
 ## Installation
 
 ```R
-devtools::install_github("dheimgartner/Rpackage")
+devtools::install_github("dheimgartner/Rpackage", build_vignettes = TRUE)
 ```
 
 ## Usage
